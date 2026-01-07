@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/deploy.js": {
+      "maxDuration": 10
+    }
+  },
+  "regions": ["sin1"]
+}
