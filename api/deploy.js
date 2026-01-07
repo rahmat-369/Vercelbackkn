@@ -87,7 +87,7 @@ export default async function handler(req, res) {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
+            Authorization: `Bearer ${process.env.VERCELTOKEN}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
