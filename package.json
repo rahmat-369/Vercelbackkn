@@ -1,0 +1,9 @@
+{
+  "name": "vercel-auto-deploy",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "formidable": "^3.5.1",
+    "adm-zip": "^0.5.10"
+  }
+}
