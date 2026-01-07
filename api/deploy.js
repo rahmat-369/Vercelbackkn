@@ -1,6 +1,6 @@
 import formidable from "formidable"
-import fs from "fs"
 import AdmZip from "adm-zip"
+import fs from "fs"
 
 export const config = {
   api: {
@@ -8,18 +8,23 @@ export const config = {
   }
 }
 
-/**
- * Aturan nama web:
- * - huruf kecil
- * - angka
- * - tanda "-"
- * - tidak diawali / diakhiri "-"
- */
+// aturan nama project vercel
 function isValidProjectName(name) {
   return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(name)
 }
 
 export default async function handler(req, res) {
+  /* =====================
+     CORS
+  ====================== */
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end()
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
@@ -33,61 +38,84 @@ export default async function handler(req, res) {
       }
 
       const name = fields.name?.toString()
-      const zipFile = files.file
+      const uploadFile = files.file
 
-      if (!name || !zipFile) {
-        return res.status(400).json({
-          error: "Field 'name' dan file ZIP wajib diisi"
-        })
+      if (!name || !uploadFile) {
+        return res
+          .status(400)
+          .json({ error: "Field 'name' dan file wajib diisi" })
       }
 
       if (!isValidProjectName(name)) {
         return res.status(400).json({
-          error:
-            "Nama web tidak valid. Gunakan huruf kecil, angka, dan '-' saja."
+          error: "Nama web hanya boleh huruf kecil, angka, dan '-'"
         })
       }
 
-      // Extract ZIP
-      const zip = new AdmZip(zipFile.filepath)
-      const entries = zip.getEntries()
+      const originalName = uploadFile.originalFilename || ""
+      const isZip = originalName.endsWith(".zip")
+      const isHtml = originalName.endsWith(".html")
 
-      const filesPayload = []
-      let hasIndexHtml = false
+      if (!isZip && !isHtml) {
+        return res.status(400).json({
+          error: "File harus berformat .zip atau .html"
+        })
+      }
 
-      for (const entry of entries) {
-        if (entry.isDirectory) continue
+      let filesPayload = []
 
-        const fileName = entry.entryName
-
-        if (fileName === "index.html") {
-          hasIndexHtml = true
-        }
+      /* =====================
+         MODE HTML (nama bebas)
+      ====================== */
+      if (isHtml) {
+        const buffer = await fs.promises.readFile(uploadFile.filepath)
 
         filesPayload.push({
-          file: fileName,
-          data: entry.getData().toString("base64"),
+          file: "index.html",
+          data: buffer.toString("base64"),
           encoding: "base64"
         })
       }
 
-      if (!filesPayload.length) {
-        return res.status(400).json({ error: "ZIP kosong" })
+      /* =====================
+         MODE ZIP
+      ====================== */
+      if (isZip) {
+        const zip = new AdmZip(uploadFile.filepath)
+        const entries = zip.getEntries()
+
+        for (const entry of entries) {
+          if (entry.isDirectory) continue
+
+          filesPayload.push({
+            file: entry.entryName,
+            data: entry.getData().toString("base64"),
+            encoding: "base64"
+          })
+        }
+
+        if (!filesPayload.length) {
+          return res.status(400).json({ error: "ZIP kosong" })
+        }
       }
 
-      if (!hasIndexHtml) {
-        return res.status(400).json({
-          error: "ZIP harus mengandung file index.html"
-        })
+      /* =====================
+         DEPLOY KE VERCEL
+      ====================== */
+      const token = process.env.VERCELTOKEN
+
+      if (!token) {
+        return res
+          .status(500)
+          .json({ error: "Vercel token tidak ditemukan" })
       }
 
-      // Deploy ke Vercel
       const response = await fetch(
         "https://api.vercel.com/v13/deployments",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.VERCELTOKEN}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -111,4 +139,4 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: e.message })
     }
   })
-  }
+      }
