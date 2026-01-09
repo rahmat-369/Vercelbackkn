@@ -102,7 +102,7 @@ export default async function handler(req, res) {
       /* =====================
          DEPLOY KE VERCEL
       ====================== */
-      const token = process.env.VERCELTOKEN
+      const token = "l16kX4TZ6ykuOIbdhZbr7sHp"
 
       if (!token) {
         return res
