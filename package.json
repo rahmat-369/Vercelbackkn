@@ -1,6 +1,6 @@
 {
-  "name": "vercel-auto-deploy",
-  "private": true,
+  "name": "vercel-deploy-tool",
+  "version": "1.0.0",
   "type": "module",
   "dependencies": {
     "formidable": "^3.5.1",
