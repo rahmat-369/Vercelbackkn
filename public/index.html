@@ -1,1 +1,1400 @@
-
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploy Vercel | Modern & Professional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #171717;
+            --accent: #0070f3;
+            --accent-light: #3291ff;
+            --text: #fafafa;
+            --text-secondary: #a0a0a0;
+            --card-bg: #0a0a0a;
+            --border: #333333;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .logo-icon {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent);
+        }
+        
+        .nav-link.active {
+            color: var(--accent);
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent);
+        }
+        
+        /* Main Content */
+        main {
+            padding-top: 80px;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        /* Page Indicators */
+        .page-indicator {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .indicator-dot.active {
+            background-color: var(--accent);
+            transform: scale(1.3);
+        }
+        
+        /* Page 1: Introduction */
+        .intro-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .intro-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .intro-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .vercel-logo {
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .vercel-logo img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .vercel-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .tutorial-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            text-align: left;
+            max-width: 700px;
+            margin: 40px auto 0;
+        }
+        
+        .tutorial-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .tutorial-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .step-number {
+            background-color: var(--accent);
+            color: var(--primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        /* Page 2: Community & Contact */
+        .community-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-light);
+        }
+        
+        .community-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+        }
+        
+        .community-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .community-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 112, 243, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Button Styles with Light Effect */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Light Effect for Buttons */
+        .btn-light-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+        
+        .btn-light-effect:hover::before {
+            left: 100%;
+        }
+        
+        /* File Type Selection */
+        .file-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: var(--secondary);
+            border-radius: 8px;
+            padding: 5px;
+        }
+        
+        .file-type-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: none;
+        }
+        
+        .file-type-btn.active {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .file-type-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Page 3: Deploy Form */
+        .deploy-content {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .deploy-form {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-input.valid {
+            border-color: var(--success);
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
+        }
+        
+        .form-input.invalid {
+            border-color: var(--error);
+            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Validation Status */
+        .validation-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .validation-status.valid {
+            color: var(--success);
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success);
+        }
+        
+        .validation-status.invalid {
+            color: var(--error);
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--error);
+        }
+        
+        .validation-status.info {
+            color: var(--text-secondary);
+            background-color: rgba(160, 160, 160, 0.1);
+            border-left: 3px solid var(--text-secondary);
+        }
+        
+        .validation-icon {
+            font-size: 1rem;
+        }
+        
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        .char-counter.warning {
+            color: var(--warning);
+        }
+        
+        .char-counter.error {
+            color: var(--error);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+        }
+        
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background-color: var(--secondary);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--accent);
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        /* File Type Specific Styles */
+        .file-type-content {
+            display: none;
+        }
+        
+        .file-type-content.active {
+            display: block;
+        }
+        
+        .log-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .log-success {
+            color: var(--success);
+        }
+        
+        .log-error {
+            color: var(--error);
+        }
+        
+        .log-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .log-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Token Warning - DIHAPUS */
+        
+        /* Allowed Characters Info */
+        .allowed-chars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .char-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .char-badge.allowed {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .char-badge.not-allowed {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .intro-title {
+                font-size: 2.5rem;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .community-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .deploy-form {
+                padding: 25px;
+            }
+            
+            .page-indicator {
+                right: 15px;
+            }
+            
+            .file-type-selector {
+                flex-direction: column;
+            }
+            
+            .allowed-chars {
+                gap: 5px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .intro-title {
+                font-size: 2rem;
+            }
+            
+            .vercel-text {
+                font-size: 1.8rem;
+            }
+            
+            .vercel-logo img {
+                height: 40px;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .tutorial-card {
+                padding: 20px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .float-animation {
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Background Effects */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .light-beam {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
+            opacity: 0.1;
+        }
+        
+        /* Scroll Behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="light-beam" style="top: 20%; left: -100%; animation: moveBeam 15s linear infinite;"></div>
+        <div class="light-beam" style="top: 40%; left: -100%; animation: moveBeam 20s linear infinite 2s;"></div>
+        <div class="light-beam" style="top: 60%; left: -100%; animation: moveBeam 25s linear infinite 4s;"></div>
+    </div>
+    
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-rocket logo-icon"></i>
+                    <span>VercelDeploy</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#page1" class="nav-link active" data-page="1">Pengenalan</a>
+                    <a href="#page2" class="nav-link" data-page="2">Komunitas</a>
+                    <a href="#page3" class="nav-link" data-page="3">Deploy</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Page Indicator -->
+    <div class="page-indicator">
+        <div class="indicator-dot active" data-page="1"></div>
+        <div class="indicator-dot" data-page="2"></div>
+        <div class="indicator-dot" data-page="3"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <main>
+        <!-- Page 1: Introduction -->
+        <section id="page1" class="section">
+            <div class="container">
+                <div class="intro-content">
+                    <h1 class="intro-title">Deploy Website dengan Vercel</h1>
+                    <p class="intro-subtitle">Platform modern untuk mendeploy website statis dan serverless functions dengan cepat dan mudah. Dapatkan performa terbaik dengan konfigurasi sederhana.</p>
+                    
+                    <div class="vercel-logo float-animation">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpGGArTE_eXrg4L5F3A3LPOjjxf8fkt3N5urx4iuR5xN-E6B2pCIzej5o&s=10" alt="Vercel Logo">
+                        <span class="vercel-text">Vercel</span>
+                    </div>
+                    
+                    <div class="tutorial-card">
+                        <h2 class="tutorial-title"><i class="fas fa-graduation-cap"></i> Tutorial Singkat</h2>
+                        <div class="tutorial-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-text">Pilih tipe file yang akan diupload: <strong>File ZIP</strong> untuk proyek lengkap atau <strong>File HTML</strong> untuk website sederhana.</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-text">Masukkan nama unik untuk proyek Anda. <strong>Nama akan otomatis disesuaikan</strong> dengan format Vercel.</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-text">Unggah file dan klik "Deploy Sekarang" untuk menghasilkan link live website.</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-text">Website Anda akan langsung online dengan URL yang dapat diakses publik.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#page3" class="btn btn-primary btn-light-effect" style="margin-top: 40px;">
+                        <i class="fas fa-play-circle"></i> Mulai Deploy Sekarang
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Page 2: Community & Contact -->
+        <section id="page2" class="section">
+            <div class="container">
+                <div class="community-content">
+                    <h2 class="page-title">✧･ﾟ: [𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡 :･ﾟ✧</h2>
+                    <p class="community-subtitle">Bergabunglah dengan komunitas developer dan hubungi developer untuk dukungan teknis.</p>
+                    
+                    <div class="community-cards">
+                        <div class="community-card">
+                            <div class="card-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <h3 class="card-title">Join Saluran WhatsApp</h3>
+                            <p>Bergabung dengan saluran komunitas developer untuk mendapatkan update, tips, dan berbagi pengetahuan seputar pengembangan web dan AI.</p>
+                            <a href="https://whatsapp.com/channel/0029VbBjyjlJ93wa6hwSWa0p" target="_blank" class="btn btn-primary btn-light-effect" style="margin-top: 20px;">
+                                <i class="fab fa-whatsapp"></i> Gabung Sekarang
+                            </a>
+                        </div>
+                        
+                        <div class="community-card">
+                            <div class="card-icon">
+                                <i class="fab fa-telegram"></i>
+                            </div>
+                            <h3 class="card-title">Hubungi Developer</h3>
+                            <p>Butuh bantuan teknis atau ingin berkonsultasi tentang proyek Anda? Hubungi developer langsung melalui Telegram.</p>
+                            <a href="https://t.me/R_Aiengineering" target="_blank" class="btn btn-secondary btn-light-effect" style="margin-top: 20px;">
+                                <i class="fab fa-telegram"></i> Hubungi via Telegram
+                            </a>
+                            <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-secondary);">
+                                <i class="fas fa-user-circle"></i> @R_Aiengineering
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Page 3: Deploy Form -->
+        <section id="page3" class="section">
+            <div class="container">
+                <div class="deploy-content">
+                    <h2 class="page-title">Deploy Website Anda</h2>
+                    <p class="community-subtitle">Unggah proyek website dalam format ZIP atau file HTML langsung dan dapatkan link live dalam hitungan detik.</p>
+                    
+                    <div class="deploy-form">
+                        <!-- Token Warning dihapus karena sekarang menggunakan backend -->
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="name">
+                                <i class="fas fa-tag"></i> Nama Proyek
+                            </label>
+                            <input type="text" id="name" class="form-input" placeholder="contoh: my-website-project" />
+                            <div class="allowed-chars">
+                                <div class="char-badge allowed">
+                                    <i class="fas fa-check"></i> a-z
+                                </div>
+                                <div class="char-badge allowed">
+                                    <i class="fas fa-check"></i> 0-9
+                                </div>
+                                <div class="char-badge allowed">
+                                    <i class="fas fa-check"></i> -
+                                </div>
+                                <div class="char-badge not-allowed">
+                                    <i class="fas fa-times"></i> A-Z (otomatis jadi kecil)
+                                </div>
+                                <div class="char-badge not-allowed">
+                                    <i class="fas fa-times"></i> @#$%^&*()
+                                </div>
+                            </div>
+                            <div class="char-counter">
+                                <span id="char-count">0</span>/50 karakter
+                            </div>
+                            <div id="validation-status" class="validation-status info">
+                                <i class="fas fa-info-circle validation-icon"></i>
+                                <span id="validation-text">Masukkan nama proyek (a-z, 0-9, dan -)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-file-code"></i> Tipe File
+                            </label>
+                            <div class="file-type-selector">
+                                <button class="file-type-btn active" data-type="zip">
+                                    <i class="fas fa-file-archive"></i> File ZIP
+                                </button>
+                                <button class="file-type-btn" data-type="html">
+                                    <i class="fab fa-html5"></i> File HTML
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- ZIP File Content -->
+                        <div id="zip-content" class="file-type-content active">
+                            <div class="form-group">
+                                <label class="form-label" for="zip-file">
+                                    <i class="fas fa-file-archive"></i> File ZIP Proyek
+                                </label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="zip-file" class="file-input" accept=".zip" />
+                                    <label for="zip-file" class="file-input-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span id="zip-file-name">Pilih file ZIP (maks. 10MB)</span>
+                                    </label>
+                                </div>
+                                <p style="margin-top: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                                    <i class="fas fa-info-circle"></i> File ZIP harus berisi seluruh file website (HTML, CSS, JS, dll.)
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- HTML File Content -->
+                        <div id="html-content" class="file-type-content">
+                            <div class="form-group">
+                                <label class="form-label" for="html-file">
+                                    <i class="fab fa-html5"></i> File HTML
+                                </label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="html-file" class="file-input" accept=".html,.htm" />
+                                    <label for="html-file" class="file-input-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span id="html-file-name">Pilih file HTML (maks. 5MB)</span>
+                                    </label>
+                                </div>
+                                <p style="margin-top: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                                    <i class="fas fa-info-circle"></i> File HTML akan dijadikan sebagai index.html di Vercel
+                                </p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="additional-files">
+                                    <i class="fas fa-folder-plus"></i> File Tambahan (CSS, JS, Gambar)
+                                </label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="additional-files" class="file-input" accept=".css,.js,.jpg,.jpeg,.png,.gif,.svg" multiple />
+                                    <label for="additional-files" class="file-input-label">
+                                        <i class="fas fa-file-upload"></i>
+                                        <span id="additional-files-name">Pilih file tambahan (opsional)</span>
+                                    </label>
+                                </div>
+                                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary); padding: 10px; background-color: rgba(50, 145, 255, 0.1); border-radius: 6px; border-left: 3px solid var(--accent);">
+                                    <i class="fas fa-lightbulb"></i> Anda bisa memilih multiple file dengan menahan Ctrl/Cmd + klik
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="deploy" class="btn btn-primary btn-light-effect pulse-animation" style="width: 100%; padding: 16px;">
+                            <i class="fas fa-bolt"></i> Deploy Sekarang
+                        </button>
+                        
+                        <div class="log-container">
+                            <div id="log">⏳ Hasil deploy akan muncul di sini...</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px; color: var(--text-secondary);">
+                        <p><i class="fas fa-shield-alt"></i> Proyek Anda akan di-deploy langsung ke Vercel melalui backend yang aman.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Dibuat dengan <i class="fas fa-heart" style="color: var(--error);"></i> untuk komunitas developer | Powered by Vercel</p>
+            <p style="margin-top: 10px;">© 2023 VercelDeploy. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Format nama proyek untuk Vercel - SEDERHANA: hanya ubah ke lowercase dan biarkan "-"
+        function formatProjectName(input) {
+            // Ubah ke lowercase
+            let formatted = input.toLowerCase();
+            
+            // Hanya izinkan: a-z, 0-9, dan -
+            formatted = formatted.replace(/[^a-z0-9-]/g, '');
+            
+            return formatted;
+        }
+        
+        // Validasi nama proyek
+        function validateProjectName(name) {
+            const regex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+            
+            if (name.length === 0) {
+                return { valid: false, message: "Masukkan nama proyek" };
+            }
+            
+            if (name.length < 3) {
+                return { valid: false, message: "Nama terlalu pendek (min. 3 karakter)" };
+            }
+            
+            if (name.length > 50) {
+                return { valid: false, message: "Nama terlalu panjang (maks. 50 karakter)" };
+            }
+            
+            // Periksa jika dimulai atau diakhiri dengan tanda hubung
+            if (name.startsWith('-') || name.endsWith('-')) {
+                return { valid: false, message: "Tidak boleh dimulai atau diakhiri dengan tanda hubung (-)" };
+            }
+            
+            // Periksa jika ada tanda hubung berurutan
+            if (name.includes('--')) {
+                return { valid: false, message: "Tidak boleh ada tanda hubung berurutan (--)" };
+            }
+            
+            if (!regex.test(name)) {
+                // Beri pesan error yang lebih spesifik
+                if (/[A-Z]/.test(name)) {
+                    return { valid: false, message: "Huruf besar otomatis diubah menjadi kecil" };
+                } else if (/[^a-z0-9-]/.test(name)) {
+                    return { valid: false, message: "Hanya boleh mengandung a-z, 0-9, dan -" };
+                } else if (name.match(/^-/)) {
+                    return { valid: false, message: "Tidak boleh dimulai dengan -" };
+                } else if (name.match(/-$/)) {
+                    return { valid: false, message: "Tidak boleh diakhiri dengan -" };
+                } else {
+                    return { valid: false, message: "Format nama tidak valid" };
+                }
+            }
+            
+            return { valid: true, message: "Nama proyek valid ✓" };
+        }
+        
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const indicatorDots = document.querySelectorAll('.indicator-dot');
+        const logElement = document.getElementById('log');
+        const deployButton = document.getElementById('deploy');
+        const nameInput = document.getElementById('name');
+        const charCountElement = document.getElementById('char-count');
+        const validationStatus = document.getElementById('validation-status');
+        const validationText = document.getElementById('validation-text');
+        
+        // File type elements
+        const fileTypeBtns = document.querySelectorAll('.file-type-btn');
+        const fileTypeContents = document.querySelectorAll('.file-type-content');
+        
+        // File inputs
+        const zipFileInput = document.getElementById('zip-file');
+        const htmlFileInput = document.getElementById('html-file');
+        const additionalFilesInput = document.getElementById('additional-files');
+        
+        // File name displays
+        const zipFileNameElement = document.getElementById('zip-file-name');
+        const htmlFileNameElement = document.getElementById('html-file-name');
+        const additionalFilesNameElement = document.getElementById('additional-files-name');
+        
+        // Current file type
+        let currentFileType = 'zip';
+        
+        // Last valid name
+        let lastValidName = '';
+        
+        // Navigation Handling
+        function updateActivePage(pageNumber) {
+            navLinks.forEach(link => {
+                if (parseInt(link.dataset.page) === pageNumber) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            indicatorDots.forEach(dot => {
+                if (parseInt(dot.dataset.page) === pageNumber) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        // Add click event to navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageNumber = parseInt(this.dataset.page);
+                updateActivePage(pageNumber);
+                
+                document.getElementById(`page${pageNumber}`).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add click event to indicator dots
+        indicatorDots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                const pageNumber = parseInt(this.dataset.page);
+                updateActivePage(pageNumber);
+                
+                document.getElementById(`page${pageNumber}`).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Handle scroll to update active page
+        let isScrolling = false;
+        window.addEventListener('scroll', function() {
+            if (isScrolling) return;
+            
+            isScrolling = true;
+            
+            setTimeout(() => {
+                const sections = document.querySelectorAll('.section');
+                let currentSection = 0;
+                
+                sections.forEach((section, index) => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight / 2) {
+                        currentSection = index + 1;
+                    }
+                });
+                
+                updateActivePage(currentSection);
+                isScrolling = false;
+            }, 100);
+        });
+        
+        // File type selection
+        fileTypeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const type = this.dataset.type;
+                
+                fileTypeBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                fileTypeContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${type}-content`).classList.add('active');
+                
+                currentFileType = type;
+            });
+        });
+        
+        // Nama proyek input handler - MENGIZINKAN "-" UNTUK DIKETIK
+        nameInput.addEventListener('input', function() {
+            const originalValue = this.value;
+            
+            // Format nilai input - SANGAT SEDERHANA
+            // 1. Ubah ke lowercase
+            // 2. Hapus karakter selain a-z, 0-9, dan -
+            let formattedValue = originalValue.toLowerCase();
+            formattedValue = formattedValue.replace(/[^a-z0-9-]/g, '');
+            
+            // Update nilai input jika ada perubahan
+            if (originalValue !== formattedValue) {
+                // Simpan posisi kursor
+                const cursorPos = this.selectionStart;
+                const cursorOffset = formattedValue.length - originalValue.length;
+                
+                // Update nilai
+                this.value = formattedValue;
+                
+                // Update posisi kursor
+                const newCursorPos = Math.max(0, cursorPos + cursorOffset);
+                this.setSelectionRange(newCursorPos, newCursorPos);
+            }
+            
+            // Update karakter count
+            charCountElement.textContent = formattedValue.length;
+            
+            // Update warna counter
+            if (formattedValue.length > 45) {
+                charCountElement.className = 'char-counter warning';
+            } else if (formattedValue.length > 50) {
+                charCountElement.className = 'char-counter error';
+            } else {
+                charCountElement.className = 'char-counter';
+            }
+            
+            // Validasi nama
+            const validation = validateProjectName(formattedValue);
+            
+            // Update status validasi
+            if (formattedValue.length === 0) {
+                validationStatus.className = 'validation-status info';
+                validationStatus.innerHTML = '<i class="fas fa-info-circle validation-icon"></i><span>Masukkan nama proyek (a-z, 0-9, dan -)</span>';
+                nameInput.classList.remove('valid', 'invalid');
+            } else if (validation.valid) {
+                validationStatus.className = 'validation-status valid';
+                validationStatus.innerHTML = `<i class="fas fa-check-circle validation-icon"></i><span>${validation.message}</span>`;
+                nameInput.classList.add('valid');
+                nameInput.classList.remove('invalid');
+                lastValidName = formattedValue;
+            } else {
+                validationStatus.className = 'validation-status invalid';
+                validationStatus.innerHTML = `<i class="fas fa-exclamation-circle validation-icon"></i><span>${validation.message}</span>`;
+                nameInput.classList.add('invalid');
+                nameInput.classList.remove('valid');
+            }
+        });
+        
+        // Handle paste event
+        nameInput.addEventListener('paste', function(e) {
+            // Biarkan paste terjadi, kemudian format setelahnya
+            setTimeout(() => {
+                const event = new Event('input', { bubbles: true });
+                this.dispatchEvent(event);
+            }, 0);
+        });
+        
+        // Handle keydown untuk mencegah karakter tidak diinginkan
+        nameInput.addEventListener('keydown', function(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                return;
+            }
+            
+            // Dapatkan karakter yang akan dimasukkan
+            const char = String.fromCharCode(e.keyCode || e.which);
+            
+            // Cek jika karakter adalah huruf (a-z), angka (0-9), atau tanda hubung
+            const isValidChar = /^[a-zA-Z0-9-]$/.test(char);
+            
+            // Jika karakter tidak valid, cegah input
+            if (!isValidChar) {
+                e.preventDefault();
+            }
+        });
+        
+        // ZIP file input handling
+        zipFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                zipFileNameElement.textContent = fileName;
+                
+                if (this.files[0].size > 10 * 1024 * 1024) {
+                    logElement.textContent = "❌ File ZIP terlalu besar (maks. 10MB)";
+                    logElement.className = "log-error";
+                    this.value = "";
+                    zipFileNameElement.textContent = "Pilih file ZIP (maks. 10MB)";
+                }
+            } else {
+                zipFileNameElement.textContent = "Pilih file ZIP (maks. 10MB)";
+            }
+        });
+        
+        // HTML file input handling
+        htmlFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                htmlFileNameElement.textContent = fileName;
+                
+                if (this.files[0].size > 5 * 1024 * 1024) {
+                    logElement.textContent = "❌ File HTML terlalu besar (maks. 5MB)";
+                    logElement.className = "log-error";
+                    this.value = "";
+                    htmlFileNameElement.textContent = "Pilih file HTML (maks. 5MB)";
+                }
+            } else {
+                htmlFileNameElement.textContent = "Pilih file HTML (maks. 5MB)";
+            }
+        });
+        
+        // Additional files input handling
+        additionalFilesInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                if (this.files.length === 1) {
+                    additionalFilesNameElement.textContent = this.files[0].name;
+                } else {
+                    additionalFilesNameElement.textContent = `${this.files.length} file dipilih`;
+                }
+                
+                const totalSize = Array.from(this.files).reduce((total, file) => total + file.size, 0);
+                if (totalSize > 5 * 1024 * 1024) {
+                    logElement.textContent = "❌ File tambahan terlalu besar (total maks. 5MB)";
+                    logElement.className = "log-error";
+                    this.value = "";
+                    additionalFilesNameElement.textContent = "Pilih file tambahan (opsional)";
+                }
+            } else {
+                additionalFilesNameElement.textContent = "Pilih file tambahan (opsional)";
+            }
+        });
+        
+        // Deploy button event
+        deployButton.addEventListener('click', async () => {
+            let name = nameInput.value.trim();
+            
+            // Reset log
+            logElement.textContent = "⏳ Mengirim ke backend...";
+            logElement.className = "";
+            
+            // Validasi nama
+            const nameValidation = validateProjectName(name);
+            if (!nameValidation.valid) {
+                logElement.textContent = `❌ ${nameValidation.message}`;
+                logElement.className = "log-error";
+                nameInput.focus();
+                return;
+            }
+            
+            // Gunakan nama yang sudah valid
+            name = lastValidName;
+            
+            // Prepare FormData untuk backend
+            const formData = new FormData();
+            formData.append('name', name);
+            
+            let fileToUpload = null;
+            
+            if (currentFileType === 'zip') {
+                // ZIP file validation
+                if (!zipFileInput.files[0]) {
+                    logElement.textContent = "❌ File ZIP wajib dipilih";
+                    logElement.className = "log-error";
+                    return;
+                }
+                
+                if (!zipFileInput.files[0].name.toLowerCase().endsWith(".zip")) {
+                    logElement.textContent = "❌ File harus berformat ZIP (.zip)";
+                    logElement.className = "log-error";
+                    return;
+                }
+                
+                fileToUpload = zipFileInput.files[0];
+                
+            } else if (currentFileType === 'html') {
+                // HTML file validation
+                if (!htmlFileInput.files[0]) {
+                    logElement.textContent = "❌ File HTML wajib dipilih";
+                    logElement.className = "log-error";
+                    return;
+                }
+                
+                const htmlFileName = htmlFileInput.files[0].name.toLowerCase();
+                if (!htmlFileName.endsWith(".html") && !htmlFileName.endsWith(".htm")) {
+                    logElement.textContent = "❌ File harus berformat HTML (.html atau .htm)";
+                    logElement.className = "log-error";
+                    return;
+                }
+                
+                fileToUpload = htmlFileInput.files[0];
+            }
+            
+            formData.append('file', fileToUpload);
+            
+            // Show loading state
+            deployButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses Deploy...';
+            deployButton.disabled = true;
+            
+            try {
+                // Kirim ke backend API
+                const response = await fetch('/api/deploy', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    logElement.textContent = `❌ ${data.error || 'Gagal deploy'}`;
+                    logElement.className = "log-error";
+                    console.error('Deploy error:', data);
+                } else {
+                    const url = data.url;
+                    logElement.innerHTML = `✅ BERHASIL! Website Anda sudah online.<br><br>
+                    <a href="${url}" target="_blank" class="log-link">${url}</a><br><br>
+                    <small>Klik link di atas untuk membuka website Anda.</small>`;
+                    logElement.className = "log-success";
+                    
+                    // Reset form
+                    nameInput.value = "";
+                    charCountElement.textContent = "0";
+                    validationStatus.className = 'validation-status info';
+                    validationStatus.innerHTML = '<i class="fas fa-info-circle validation-icon"></i><span>Masukkan nama proyek (a-z, 0-9, dan -)</span>';
+                    nameInput.classList.remove('valid', 'invalid');
+                    zipFileInput.value = "";
+                    htmlFileInput.value = "";
+                    additionalFilesInput.value = "";
+                    zipFileNameElement.textContent = "Pilih file ZIP (maks. 10MB)";
+                    htmlFileNameElement.textContent = "Pilih file HTML (maks. 5MB)";
+                    additionalFilesNameElement.textContent = "Pilih file tambahan (opsional)";
+                }
+            } catch (e) {
+                logElement.textContent = "❌ Gagal menghubungi server. Cek koneksi internet Anda.";
+                logElement.className = "log-error";
+                console.error('Fetch error:', e);
+            } finally {
+                // Reset button state
+                deployButton.innerHTML = '<i class="fas fa-bolt"></i> Deploy Sekarang';
+                deployButton.disabled = false;
+            }
+        });
+        
+        // Add background beam animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes moveBeam {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize
+        updateActivePage(1);
+    </script>
+</body>
+</html>
