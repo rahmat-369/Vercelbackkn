@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploy Website - Vercel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .loading-pulse {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10 pt-10">
+            <h1 class="text-4xl font-bold text-white mb-3">
+                <i class="fas fa-rocket mr-3"></i>Deploy Website
+            </h1>
+            <p class="text-white/80 text-lg">Upload file HTML atau ZIP, dapatkan URL langsung!</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+            <div class="space-y-6">
+                <!-- Project Name -->
+                <div>
+                    <label class="block text-white mb-2 font-medium">
+                        <i class="fas fa-project-diagram mr-2"></i>Nama Project
+                    </label>
+                    <input 
+                        type="text" 
+                        id="projectName" 
+                        placeholder="misal: website-saya" 
+                        class="w-full p-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition"
+                    >
+                    <p class="text-white/60 text-sm mt-2">
+                        Hanya huruf kecil, angka, dan dash. Akan menjadi: <span id="urlPreview" class="font-mono text-blue-300">namaproject.vercel.app</span>
+                    </p>
+                </div>
+
+                <!-- File Upload -->
+                <div>
+                    <label class="block text-white mb-2 font-medium">
+                        <i class="fas fa-file-upload mr-2"></i>File Website
+                    </label>
+                    <div class="border-2 border-dashed border-white/30 rounded-xl p-6 text-center hover:border-white/50 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-white/70 mb-3"></i>
+                        <p class="text-white mb-1">Klik untuk upload file</p>
+                        <p class="text-white/60 text-sm">HTML tunggal atau ZIP (maks. 50MB)</p>
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            accept=".html,.zip,.css,.js,.png,.jpg,.jpeg,.gif" 
+                            class="hidden"
+                        >
+                    </div>
+                    <div id="fileInfo" class="mt-3 hidden">
+                        <p class="text-white">
+                            <i class="fas fa-file mr-2"></i>
+                            <span id="fileName"></span> 
+                            <span id="fileSize" class="text-white/60 ml-2"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Deploy Button -->
+                <button 
+                    onclick="handleDeploy()" 
+                    id="deployBtn" 
+                    class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+                >
+                    <i class="fas fa-rocket mr-2"></i>
+                    <span id="btnText">Deploy Sekarang</span>
+                </button>
+
+                <!-- Info Box -->
+                <div class="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 mt-4">
+                    <p class="text-white text-sm">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Website akan online dengan URL: <strong>namaproject.vercel.app</strong>
+                        <br>Tidak ada tambahan hash/username di URL!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="status" class="mt-8 hidden">
+                <div class="bg-black/30 rounded-xl p-6 border border-white/10">
+                    <h3 class="text-white font-bold mb-4 text-lg">
+                        <i class="fas fa-spinner fa-spin mr-2" id="statusIcon"></i>
+                        <span id="statusText">Sedang memproses...</span>
+                    </h3>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-white/10 rounded-full h-2 mb-4">
+                        <div id="progressBar" class="bg-green-500 h-2 rounded-full w-0 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- Result URL -->
+                    <div id="resultUrl" class="hidden mt-6">
+                        <div class="bg-gradient-to-r from-green-500/20 to-emerald-600/20 border border-green-500/30 rounded-xl p-5 text-center">
+                            <i class="fas fa-check-circle text-4xl text-green-400 mb-3"></i>
+                            <h4 class="text-white font-bold text-xl mb-2">Website Siap!</h4>
+                            <p class="text-white/80 mb-4">Website Anda sudah online dan dapat diakses:</p>
+                            
+                            <div class="bg-black/40 rounded-lg p-4 mb-4 font-mono break-all">
+                                <p id="finalUrl" class="text-green-300 text-lg"></p>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <a href="#" target="_blank" id="openLink" class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium py-3 rounded-lg text-center transition">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Buka Website
+                                </a>
+                                <button onclick="copyUrl()" id="copyBtn" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg transition">
+                                    <i class="far fa-copy mr-2"></i>Copy URL
+                                </button>
+                            </div>
+                            
+                            <p id="copyStatus" class="text-white/60 text-sm mt-3 hidden">
+                                <i class="fas fa-check mr-1"></i>URL berhasil disalin!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="hidden mt-6">
+                        <div class="bg-gradient-to-r from-red-500/20 to-pink-600/20 border border-red-500/30 rounded-xl p-5 text-center">
+                            <i class="fas fa-exclamation-circle text-4xl text-red-400 mb-3"></i>
+                            <h4 class="text-white font-bold text-xl mb-2">Gagal Deploy</h4>
+                            <p id="errorText" class="text-white/80 mb-4"></p>
+                            <button onclick="retryDeploy()" class="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-medium py-3 px-6 rounded-lg transition">
+                                <i class="fas fa-redo mr-2"></i>Coba Lagi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-10 pb-10">
+            <p class="text-white/60 text-sm">
+                <i class="fas fa-bolt mr-1"></i>Powered by Vercel
+                <span class="mx-2">•</span>
+                <i class="fas fa-shield-alt mr-1"></i>SSL Gratis
+                <span class="mx-2">•</span>
+                <i class="fas fa-globe mr-1"></i>URL Clean tanpa Hash
+            </p>
+            <p class="text-white/40 text-xs mt-2">
+                File Anda akan langsung online dalam hitungan detik
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-update URL preview
+        document.getElementById('projectName').addEventListener('input', function(e) {
+            const cleanName = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '')
+                .substring(0, 50);
+            
+            if (cleanName) {
+                document.getElementById('urlPreview').textContent = `${cleanName}.vercel.app`;
+            } else {
+                document.getElementById('urlPreview').textContent = 'namaproject.vercel.app';
+            }
+        });
+
+        // Handle file selection
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileInfo = document.getElementById('fileInfo');
+                document.getElementById('fileName').textContent = file.name;
+                
+                // Format file size
+                const fileSize = file.size;
+                let sizeText = '';
+                if (fileSize < 1024) {
+                    sizeText = fileSize + ' B';
+                } else if (fileSize < 1024 * 1024) {
+                    sizeText = (fileSize / 1024).toFixed(1) + ' KB';
+                } else {
+                    sizeText = (fileSize / (1024 * 1024)).toFixed(1) + ' MB';
+                }
+                
+                document.getElementById('fileSize').textContent = `(${sizeText})`;
+                fileInfo.classList.remove('hidden');
+            }
+        });
+
+        // Main deploy function
+        async function handleDeploy() {
+            const nameInput = document.getElementById('projectName');
+            const fileInput = document.getElementById('fileInput');
+            const btn = document.getElementById('deployBtn');
+            const btnText = document.getElementById('btnText');
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            const statusIcon = document.getElementById('statusIcon');
+            const resultUrl = document.getElementById('resultUrl');
+            const errorMessage = document.getElementById('errorMessage');
+            const progressBar = document.getElementById('progressBar');
+            
+            // Clean project name
+            const projectName = nameInput.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '')
+                .substring(0, 50);
+
+            // Validasi
+            if (!projectName || projectName.length < 2) {
+                showError('Nama project minimal 2 karakter');
+                return;
+            }
+            
+            if (!fileInput.files[0]) {
+                showError('Pilih file HTML atau ZIP terlebih dahulu');
+                return;
+            }
+
+            // Update UI
+            nameInput.value = projectName;
+            btn.disabled = true;
+            btnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+            statusDiv.classList.remove('hidden');
+            resultUrl.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            statusIcon.className = 'fas fa-spinner fa-spin mr-2';
+            
+            // Progress animation
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 300);
+
+            // Update status messages
+            const statusMessages = [
+                "Menyiapkan file...",
+                "Mengupload ke server...",
+                "Membuat deployment...",
+                "Menyiapkan URL..."
+            ];
+            
+            let statusIndex = 0;
+            const statusInterval = setInterval(() => {
+                statusText.textContent = statusMessages[statusIndex];
+                statusIndex = (statusIndex + 1) % statusMessages.length;
+            }, 2000);
+
+            // Create FormData
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('name', projectName);
+
+            try {
+                // Send to backend
+                const response = await fetch('/api/deploy', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Clear intervals
+                clearInterval(progressInterval);
+                clearInterval(statusInterval);
+                
+                // Complete progress bar
+                progressBar.style.width = '100%';
+
+                if (data.success) {
+                    // Success!
+                    statusIcon.className = 'fas fa-check-circle mr-2 text-green-400';
+                    statusText.textContent = "Berhasil!";
+                    
+                    // Show result after delay
+                    setTimeout(() => {
+                        const finalUrl = data.data.fullUrl || `https://${data.data.url}`;
+                        document.getElementById('finalUrl').textContent = finalUrl;
+                        
+                        const openLink = document.getElementById('openLink');
+                        openLink.href = finalUrl;
+                        
+                        resultUrl.classList.remove('hidden');
+                    }, 500);
+                    
+                } else {
+                    // Error
+                    throw new Error(data.message || "Terjadi kesalahan");
+                }
+
+            } catch (err) {
+                clearInterval(progressInterval);
+                clearInterval(statusInterval);
+                
+                statusIcon.className = 'fas fa-exclamation-circle mr-2 text-red-400';
+                statusText.textContent = "Gagal";
+                
+                showError(err.message || "Terjadi kesalahan jaringan");
+            } finally {
+                btn.disabled = false;
+                btnText.innerHTML = '<i class="fas fa-rocket mr-2"></i>Deploy Sekarang';
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Copy URL function
+        function copyUrl() {
+            const url = document.getElementById('finalUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const copyStatus = document.getElementById('copyStatus');
+                const copyBtn = document.getElementById('copyBtn');
+                
+                copyStatus.classList.remove('hidden');
+                copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+                copyBtn.classList.remove('from-purple-500', 'to-pink-500');
+                copyBtn.classList.add('from-green-500', 'to-emerald-500');
+                
+                setTimeout(() => {
+                    copyStatus.classList.add('hidden');
+                    copyBtn.innerHTML = '<i class="far fa-copy mr-2"></i>Copy URL';
+                    copyBtn.classList.remove('from-green-500', 'to-emerald-500');
+                    copyBtn.classList.add('from-purple-500', 'to-pink-500');
+                }, 3000);
+            });
+        }
+
+        // Retry deploy
+        function retryDeploy() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            handleDeploy();
+        }
+
+        // Drag and drop
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            document.querySelector('[onclick="document.getElementById(\'fileInput\').click()"]')
+                .classList.add('border-white', 'bg-white/10');
+        });
+
+        document.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            document.querySelector('[onclick="document.getElementById(\'fileInput\').click()"]')
+                .classList.remove('border-white', 'bg-white/10');
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            document.querySelector('[onclick="document.getElementById(\'fileInput\').click()"]')
+                .classList.remove('border-white', 'bg-white/10');
+            
+            if (e.dataTransfer.files.length) {
+                document.getElementById('fileInput').files = e.dataTransfer.files;
+                const event = new Event('change');
+                document.getElementById('fileInput').dispatchEvent(event);
+            }
+        });
+    </script>
+</body>
+      </html>
