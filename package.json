@@ -1,9 +1,21 @@
 {
-  "name": "vercel-deploy-tool",
-  "version": "1.0.0",
-  "type": "module",
+  "name": "vercel-deployer",
+  "version": "2.0.0",
+  "description": "Deploy website to Vercel with clean URLs",
+  "main": "api/deploy.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "formidable": "^3.5.1",
-    "adm-zip": "^0.5.10"
-  }
+    "adm-zip": "^0.5.10",
+    "busboy": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["deploy", "vercel", "hosting", "website"],
+  "author": "Your Name",
+  "license": "MIT"
 }
